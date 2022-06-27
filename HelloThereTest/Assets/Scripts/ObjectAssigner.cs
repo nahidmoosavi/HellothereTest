@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Pool;
+using UnityEngine.SceneManagement;
 
 public class ObjectAssigner : MonoBehaviour
 {
@@ -71,19 +72,19 @@ public class ObjectAssigner : MonoBehaviour
     /// </summary>
     private IEnumerator DetectMouseClickPosition()
     {
-        //Vector3 mousePosition = Input.mousePosition;
-        //mousePosition.z = Camera.main.transform.position.z;
-        //Ray ray = Camera.main.ScreenPointToRay(mousePosition);
+        Vector3 mousePosition = Input.mousePosition;
+        mousePosition.z = Camera.main.transform.position.z;
+        Ray ray = Camera.main.ScreenPointToRay(mousePosition);
 
-        Ray ray = Camera.main.ViewportPointToRay(Vector3.one * 0.5f);
-        Debug.DrawRay(ray.origin, ray.direction, Color.green, 5f);
+        //Ray ray = Camera.main.ViewportPointToRay(Vector3.one * 0.5f);
+        //Debug.DrawRay(ray.origin, ray.direction, Color.green, 5f);
 
         RaycastHit hitInfo;
         if (Physics.Raycast(ray, out hitInfo, 50f))
         {
             if (hitInfo.collider.tag == "Player")
             {
-                isHitted = true; //If the sphere is hitted, freez it's position until the end of AssignObjects work to showing all the objects
+                isHitted = true; //If the sphere is hitted, freezes the pendulum's position until the end of AssignObjects work to showing all the objects
                 fibonacci.ClearObjects(assignedObjects);
                 Vector3[] vectors = fibonacci.SortFibunacciSeries(hitInfo.point, objectsPositions, objectsNumber);
                 StartCoroutine(fibonacci.AssignObjects(vectors, this.transform.position, assignedObjects, scaleValue, waitTime));
@@ -92,8 +93,13 @@ public class ObjectAssigner : MonoBehaviour
             {
                 fibonacci.ClearObjects(assignedObjects);
             }
-            yield return new WaitForSeconds((objectsNumber + objectsNumber/2) * waitTime);
-            EventManager.EventManagerInstance.ProcessingPointsEnd();
+            yield return new WaitForSeconds((objectsNumber * 2) * waitTime);
+
+            if(SceneManager.GetActiveScene().name == "Fibunacci Scene Moving Object")
+            {
+                EventManager.EventManagerInstance.ProcessingPointsEnd();
+            }
+
             isHitted = false;
         }
 
