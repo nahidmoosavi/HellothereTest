@@ -8,6 +8,7 @@ public class FibonacciUtilities
     private const float PI = (float)Math.PI; //Const float for PI value ≃ 3.141592...
     private float goldenRatio = (float)(1 + Math.Sqrt(5)) * 0.5f; //float value calculates  Golden ratio ≃ 1.618033...
 
+    //Todo Check performance if generating a new fibunachi is more performant or sorting neghbours
 
     /// <summary>
     /// Calculate Fibonacci Latice in 3D for a sphere to generates points evenly distubuted on a sphere 

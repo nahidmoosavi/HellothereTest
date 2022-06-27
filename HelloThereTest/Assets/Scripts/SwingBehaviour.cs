@@ -10,14 +10,15 @@ public class SwingBehaviour : MonoBehaviour
     [SerializeField] float SpeedOfPendulum = 1.0f;
 
 
-    private Transform initialTransform;
+    //private Transform initialTransform;
     private ObjectAssigner objectAssigner;
-    float angle = 0;
+    //float angle = 0;
 
+    Quaternion previousQuaternion;
     private void Start()
     {
         objectAssigner = this.GetComponentInChildren<ObjectAssigner>();
-        initialTransform = objectAssigner.transform;
+        //initialTransform = objectAssigner.transform;
 
         EventManager.EventManagerInstance.OnProcessPointsEnd += OnResetPositionAndRotation;
     }
@@ -27,7 +28,8 @@ public class SwingBehaviour : MonoBehaviour
     {
         if (objectAssigner.isHitted == true)
         {
-            angle = 0;
+            //angle = 0;
+            previousQuaternion = this.transform.localRotation;
             return;
         }
 
@@ -39,7 +41,8 @@ public class SwingBehaviour : MonoBehaviour
 
     private void Swing()
     {
-        angle = MaxAngleDeflection * Mathf.Sin(Time.time * SpeedOfPendulum);
+        previousQuaternion = this.transform.localRotation;
+        float angle = MaxAngleDeflection * Mathf.Sin(Time.time * SpeedOfPendulum);
         this.transform.localRotation = Quaternion.Euler(0, 0, angle);
     }
 
@@ -47,7 +50,7 @@ public class SwingBehaviour : MonoBehaviour
 
     private void OnResetPositionAndRotation()
     {
-        this.transform.localRotation = Quaternion.Euler(0, 0, -angle/10);
+        this.transform.localRotation = Quaternion.Slerp(this.transform.localRotation, previousQuaternion, 0.1f);
     }
 
     private void OnDestroy()
